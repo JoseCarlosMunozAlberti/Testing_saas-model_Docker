@@ -12,12 +12,14 @@ use Illuminate\Notifications\Notifiable;
 
 use App\Traits\Multitenant;
 
+use Laravel\Sanctum\HasApiTokens;
+
 #[Fillable(['tenant_id', 'name', 'email', 'password'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable, Multitenant;
+    use HasApiTokens, HasFactory, Notifiable, Multitenant;
 
     /**
      * Get the attributes that should be cast.
