@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
+use App\Models\Tenant;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -15,11 +15,14 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        Tenant::updateOrCreate(
+            ['nombre_comercial' => 'SALQUI S.R.L.'],
+            ['estado' => 'activo']
+        );
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        Tenant::updateOrCreate(
+            ['nombre_comercial' => 'Gran Palacio de la Industria'],
+            ['estado' => 'activo']
+        );
     }
 }
