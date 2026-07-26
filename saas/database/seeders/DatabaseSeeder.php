@@ -41,5 +41,7 @@ class DatabaseSeeder extends Seeder
                 'password' => Hash::make('ClaveSegura123!'),
             ]
         );
+
+        $this->call(DatosDemostracionSeeder::class);
     }
 }
