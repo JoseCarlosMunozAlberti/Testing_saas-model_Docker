@@ -8,10 +8,37 @@ use Illuminate\Http\Request;
 
 class ProductoController extends Controller
 {
-    public function index(): JsonResponse
-    {
-        return response()->json(Producto::all());
+    public function index(Request $request): JsonResponse
+{
+    $datosValidados = $request->validate([
+        'search' => 'nullable|string|max:150',
+        'per_page' => 'nullable|integer|min:5|max:100',
+        'sort_by' => 'nullable|in:id,nombre,precio,stock,created_at',
+        'sort_dir' => 'nullable|in:asc,desc',
+    ]);
+
+    $consulta = Producto::query();
+
+    if ($request->filled('search')) {
+        $busqueda = trim((string) $request->input('search'));
+
+        $consulta->where(
+            'nombre',
+            'like',
+            "%{$busqueda}%"
+        );
     }
+
+    $ordenarPor = $datosValidados['sort_by'] ?? 'id';
+    $direccion = $datosValidados['sort_dir'] ?? 'asc';
+    $porPagina = $datosValidados['per_page'] ?? 10;
+
+    $productos = $consulta
+        ->orderBy($ordenarPor, $direccion)
+        ->paginate($porPagina);
+
+    return response()->json($productos);
+}
 
     public function store(Request $request): JsonResponse
     {

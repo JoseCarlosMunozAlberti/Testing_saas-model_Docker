@@ -71,26 +71,34 @@ class ProductoMultitenantTest extends TestCase
         $response->assertStatus(401);
     }
 
-    public function test_cada_tenant_solo_lista_sus_productos(): void
-    {
-        Sanctum::actingAs($this->userSalqui);
+  public function test_cada_tenant_solo_lista_sus_productos(): void
+{
+    Sanctum::actingAs($this->userSalqui);
 
-        $response = $this->getJson('/api/productos');
+    $response = $this->getJson('/api/productos');
 
-        $response->assertStatus(200)
-            ->assertJsonCount(1)
-            ->assertJsonFragment(['nombre' => 'Producto exclusivo SALQUI'])
-            ->assertJsonMissing(['nombre' => 'Producto exclusivo Gran Palacio']);
+    $response->assertStatus(200)
+        ->assertJsonCount(1, 'data')
+        ->assertJsonFragment([
+            'nombre' => 'Producto exclusivo SALQUI',
+        ])
+        ->assertJsonMissing([
+            'nombre' => 'Producto exclusivo Gran Palacio',
+        ]);
 
-        Sanctum::actingAs($this->userGranPalacio);
+    Sanctum::actingAs($this->userGranPalacio);
 
-        $response = $this->getJson('/api/productos');
+    $response = $this->getJson('/api/productos');
 
-        $response->assertStatus(200)
-            ->assertJsonCount(1)
-            ->assertJsonFragment(['nombre' => 'Producto exclusivo Gran Palacio'])
-            ->assertJsonMissing(['nombre' => 'Producto exclusivo SALQUI']);
-    }
+    $response->assertStatus(200)
+        ->assertJsonCount(1, 'data')
+        ->assertJsonFragment([
+            'nombre' => 'Producto exclusivo Gran Palacio',
+        ])
+        ->assertJsonMissing([
+            'nombre' => 'Producto exclusivo SALQUI',
+        ]);
+}
 
     public function test_tenant_id_se_asigna_automaticamente_al_crear_producto(): void
     {
