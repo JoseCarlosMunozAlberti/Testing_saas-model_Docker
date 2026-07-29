@@ -188,4 +188,86 @@ class ProductoMultitenantTest extends TestCase
             'id' => $this->productoSalqui->id,
         ]);
     }
+    public function test_listado_de_productos_esta_paginado_por_tenant(): void
+{
+    Sanctum::actingAs($this->userSalqui);
+
+    for ($i = 1; $i <= 6; $i++) {
+        Producto::create([
+            'nombre' => "Producto paginado {$i}",
+            'precio' => 20 + $i,
+            'stock' => 10 + $i,
+        ]);
+    }
+
+    $this->getJson('/api/productos?page=1&per_page=5')
+        ->assertStatus(200)
+        ->assertJsonCount(5, 'data')
+        ->assertJsonPath('current_page', 1)
+        ->assertJsonPath('per_page', 5)
+        ->assertJsonPath('total', 7)
+        ->assertJsonPath('last_page', 2);
+}
+public function test_busqueda_de_productos_respeta_el_tenant(): void
+{
+    Sanctum::actingAs($this->userSalqui);
+
+    Producto::create([
+        'nombre' => 'Cemento especial SALQUI',
+        'precio' => 80,
+        'stock' => 25,
+    ]);
+
+    Sanctum::actingAs($this->userGranPalacio);
+
+    Producto::create([
+        'nombre' => 'Cemento secreto Palacio',
+        'precio' => 90,
+        'stock' => 30,
+    ]);
+
+    Sanctum::actingAs($this->userSalqui);
+
+    $this->getJson('/api/productos?search=cemento&per_page=10')
+        ->assertStatus(200)
+        ->assertJsonCount(1, 'data')
+        ->assertJsonFragment([
+            'nombre' => 'Cemento especial SALQUI',
+        ])
+        ->assertJsonMissing([
+            'nombre' => 'Cemento secreto Palacio',
+        ]);
+}
+public function test_productos_pueden_ordenarse_por_stock(): void
+{
+    Sanctum::actingAs($this->userSalqui);
+
+    Producto::create([
+        'nombre' => 'Producto stock 5',
+        'precio' => 50,
+        'stock' => 5,
+    ]);
+
+    Producto::create([
+        'nombre' => 'Producto stock 25',
+        'precio' => 60,
+        'stock' => 25,
+    ]);
+
+    Producto::create([
+        'nombre' => 'Producto stock 15',
+        'precio' => 70,
+        'stock' => 15,
+    ]);
+
+    $this->getJson(
+        '/api/productos?sort_by=stock&sort_dir=desc&per_page=10'
+    )
+        ->assertStatus(200)
+        ->assertJsonPath('data.0.nombre', 'Producto stock 25')
+        ->assertJsonPath('data.0.stock', 25)
+        ->assertJsonPath('data.1.stock', 15)
+        ->assertJsonPath('data.2.stock', 10)
+        ->assertJsonPath('data.3.stock', 5);
+}
 }
