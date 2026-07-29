@@ -71,10 +71,10 @@ class ProductoController extends Controller
         return response()->json($producto);
     }
 
-    public function destroy(Producto $producto): JsonResponse
-    {
-        $producto->delete();
+public function destroy(Producto $producto)
+{
+    $producto->delete();
 
-        return response()->json(null, 204);
-    }
+    return response()->noContent();
+}
 }

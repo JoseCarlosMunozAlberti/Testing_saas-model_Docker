@@ -180,13 +180,16 @@ class ProductoMultitenantTest extends TestCase
                 'stock' => 15,
             ]);
 
-        $response = $this->deleteJson("/api/productos/{$this->productoSalqui->id}");
+        $response = $this->deleteJson("/api/productos/{$this->productoSalqui->id}")
+    ->assertStatus(204);
 
-        $response->assertStatus(204);
+$this->assertSoftDeleted('productos', [
+    'id' => $this->productoSalqui->id,
+    'tenant_id' => $this->tenantSalqui->id,
+]);
 
-        $this->assertDatabaseMissing('productos', [
-            'id' => $this->productoSalqui->id,
-        ]);
+$this->getJson("/api/productos/{$this->productoSalqui->id}")
+    ->assertStatus(404);
     }
     public function test_listado_de_productos_esta_paginado_por_tenant(): void
 {
@@ -269,5 +272,30 @@ public function test_productos_pueden_ordenarse_por_stock(): void
         ->assertJsonPath('data.1.stock', 15)
         ->assertJsonPath('data.2.stock', 10)
         ->assertJsonPath('data.3.stock', 5);
+}
+public function test_producto_eliminado_logicamente_no_aparece_en_el_listado(): void
+{
+    Sanctum::actingAs($this->userSalqui);
+
+    $producto = Producto::create([
+        'nombre' => 'Producto temporal SALQUI',
+        'precio' => 45.50,
+        'stock' => 8,
+    ]);
+
+    $this->deleteJson("/api/productos/{$producto->id}")
+        ->assertStatus(204);
+
+    $this->assertSoftDeleted('productos', [
+        'id' => $producto->id,
+        'tenant_id' => $this->tenantSalqui->id,
+    ]);
+
+    $this->getJson('/api/productos?search=Producto temporal')
+        ->assertStatus(200)
+        ->assertJsonCount(0, 'data')
+        ->assertJsonMissing([
+            'nombre' => 'Producto temporal SALQUI',
+        ]);
 }
 }

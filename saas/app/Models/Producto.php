@@ -4,12 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 use App\Traits\Multitenant;
 
 class Producto extends Model
 {
-    use HasFactory, Multitenant;
+    use HasFactory, Multitenant, SoftDeletes;
 
     protected $table = 'productos';
 
@@ -29,6 +30,7 @@ class Producto extends Model
         return [
             'precio' => 'decimal:2',
             'stock' => 'integer',
+            'deleted_at' => 'datetime',
         ];
     }
 }
