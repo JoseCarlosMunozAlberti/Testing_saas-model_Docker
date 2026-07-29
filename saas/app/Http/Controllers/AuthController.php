@@ -38,12 +38,16 @@ class AuthController extends Controller
         $request->user()->currentAccessToken()->delete();
 
         return response()->json([
-            'mensaje' => 'Sesión cerrada correctamente',
+            'mensaje' => 'Sesion cerrada correctamente',
         ]);
     }
 
-    public function usuarioActual(Request $request): JsonResponse
-    {
-        return response()->json($request->user());
-    }
+public function usuarioActual(Request $request): JsonResponse
+{
+    $usuario = $request->user()->load([
+        'tenant:id,nombre_comercial,estado',
+    ]);
+
+    return response()->json($usuario);
+}
 }
