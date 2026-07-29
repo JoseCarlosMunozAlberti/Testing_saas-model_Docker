@@ -298,4 +298,69 @@ public function test_producto_eliminado_logicamente_no_aparece_en_el_listado(): 
             'nombre' => 'Producto temporal SALQUI',
         ]);
 }
+public function test_dashboard_requiere_autenticacion(): void
+{
+    $this->getJson('/api/dashboard/resumen')
+        ->assertStatus(401);
+}
+public function test_dashboard_solo_resume_productos_del_tenant_autenticado(): void
+{
+    Sanctum::actingAs($this->userSalqui);
+
+    Producto::create([
+        'nombre' => 'Cemento dashboard SALQUI',
+        'precio' => 50,
+        'stock' => 4,
+    ]);
+
+    Producto::create([
+        'nombre' => 'Producto agotado SALQUI',
+        'precio' => 80,
+        'stock' => 0,
+    ]);
+
+    Sanctum::actingAs($this->userGranPalacio);
+
+    Producto::create([
+        'nombre' => 'Martillo dashboard Palacio',
+        'precio' => 30,
+        'stock' => 2,
+    ]);
+
+    Sanctum::actingAs($this->userSalqui);
+
+    $respuestaSalqui = $this->getJson('/api/dashboard/resumen');
+
+    $respuestaSalqui
+        ->assertStatus(200)
+        ->assertJsonPath('total_productos', 3)
+        ->assertJsonPath('stock_total', 14)
+        ->assertJsonPath('valor_inventario', 1200)
+        ->assertJsonPath('productos_stock_bajo', 1)
+        ->assertJsonPath('productos_sin_stock', 1)
+        ->assertJsonFragment([
+            'nombre' => 'Cemento dashboard SALQUI',
+        ])
+        ->assertJsonMissing([
+            'nombre' => 'Martillo dashboard Palacio',
+        ]);
+
+    Sanctum::actingAs($this->userGranPalacio);
+
+    $respuestaPalacio = $this->getJson('/api/dashboard/resumen');
+
+    $respuestaPalacio
+        ->assertStatus(200)
+        ->assertJsonPath('total_productos', 2)
+        ->assertJsonPath('stock_total', 22)
+        ->assertJsonPath('valor_inventario', 4060)
+        ->assertJsonPath('productos_stock_bajo', 1)
+        ->assertJsonPath('productos_sin_stock', 0)
+        ->assertJsonFragment([
+            'nombre' => 'Martillo dashboard Palacio',
+        ])
+        ->assertJsonMissing([
+            'nombre' => 'Cemento dashboard SALQUI',
+        ]);
+}
 }
