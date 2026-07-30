@@ -21,7 +21,7 @@
                     Actualizando…
                 </span>
             </button>
-            <button class="btn btn-ps-primary btn-sm" type="button" disabled title="Próximamente">
+            <button class="btn btn-ps-primary btn-sm" id="btn-nuevo-producto" type="button">
                 <i class="bi bi-plus-lg me-1"></i> Nuevo producto
             </button>
         </div>
@@ -148,6 +148,104 @@
         </div>
     </div>
 
+</div>
+
+{{-- ===== Modal Reutilizable para Crear / Editar Producto ===== --}}
+<div class="modal fade" id="modal-producto" tabindex="-1" aria-labelledby="modal-producto-titulo" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modal-producto-titulo">Nuevo producto</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <form id="form-producto" novalidate>
+                <div class="modal-body">
+                    <input type="hidden" id="producto-id" value="">
+
+                    {{-- Campo Nombre --}}
+                    <div class="mb-3">
+                        <label for="producto-nombre" class="form-label">Nombre del producto <span class="text-danger">*</span></label>
+                        <input type="text"
+                               class="form-control"
+                               id="producto-nombre"
+                               name="nombre"
+                               placeholder="Ej. Cemento Viacha"
+                               required>
+                        <div class="invalid-feedback"></div>
+                    </div>
+
+                    {{-- Campo Precio --}}
+                    <div class="mb-3">
+                        <label for="producto-precio" class="form-label">Precio (Bs) <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text">Bs</span>
+                            <input type="number"
+                                   step="0.01"
+                                   min="0"
+                                   class="form-control"
+                                   id="producto-precio"
+                                   name="precio"
+                                   placeholder="0.00"
+                                   required>
+                        </div>
+                        <div class="invalid-feedback"></div>
+                    </div>
+
+                    {{-- Campo Stock --}}
+                    <div class="mb-3">
+                        <label for="producto-stock" class="form-label">Stock inicial / Unidades <span class="text-danger">*</span></label>
+                        <input type="number"
+                               step="1"
+                               min="0"
+                               class="form-control"
+                               id="producto-stock"
+                               name="stock"
+                               placeholder="0"
+                               required>
+                        <div class="invalid-feedback"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-ps-primary" id="btn-guardar-producto">
+                        <span id="btn-guardar-texto">Crear producto</span>
+                        <span id="btn-guardar-spinner" class="d-none">
+                            <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                            Guardando…
+                        </span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{{-- ===== Modal de Confirmación para Eliminar Producto ===== --}}
+<div class="modal fade" id="modal-eliminar-producto" tabindex="-1" aria-labelledby="modal-eliminar-titulo" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title text-danger" id="modal-eliminar-titulo">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>Eliminar producto
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body py-3">
+                <p class="mb-2">¿Estás seguro de que deseas eliminar el producto <strong id="eliminar-producto-nombre"></strong>?</p>
+                <p class="text-muted small mb-0">El producto dejará de mostrarse en el sistema y en el catálogo activo de tu empresa.</p>
+            </div>
+            <div class="modal-footer border-0 pt-0">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-danger" id="btn-confirmar-eliminar">
+                    <span id="btn-eliminar-texto">Eliminar producto</span>
+                    <span id="btn-eliminar-spinner" class="d-none">
+                        <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                        Eliminando…
+                    </span>
+                </button>
+            </div>
+        </div>
+    </div>
 </div>
 @endsection
 
