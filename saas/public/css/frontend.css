@@ -305,3 +305,15 @@ body {
         font-size: 1rem;
     }
 }
+
+/* =============================================
+   Productos – Encabezados ordenables
+   ============================================= */
+.ps-sortable-th {
+    user-select: none;
+    transition: background-color var(--ps-transition);
+}
+
+.ps-sortable-th:hover {
+    background-color: #e2e8f0 !important;
+}
