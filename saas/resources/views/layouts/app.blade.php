@@ -24,7 +24,7 @@
 
     {{-- ===== Navegación autenticada ===== --}}
     @if($mostrarNavegacion ?? false)
-    <nav class="navbar navbar-expand-lg ps-navbar" id="navbar-principal">
+    <nav class="navbar navbar-expand-lg navbar-dark ps-navbar" id="navbar-principal">
         <div class="container-fluid">
             <a class="navbar-brand" href="/dashboard">
                 <i class="bi bi-building me-1"></i> PS Tenant
@@ -41,13 +41,15 @@
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
                         <a class="nav-link {{ request()->is('dashboard') ? 'active' : '' }}"
-                           href="/dashboard" id="nav-dashboard">
+                           href="/dashboard" id="nav-dashboard"
+                           {!! request()->is('dashboard') ? 'aria-current="page"' : '' !!}>
                             <i class="bi bi-speedometer2 me-1"></i> Dashboard
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link {{ request()->is('productos') ? 'active' : '' }}"
-                           href="/productos" id="nav-productos">
+                           href="/productos" id="nav-productos"
+                           {!! request()->is('productos') ? 'aria-current="page"' : '' !!}>
                             <i class="bi bi-box-seam me-1"></i> Productos
                         </a>
                     </li>
@@ -58,7 +60,7 @@
                         <div><strong id="navbar-nombre-usuario">—</strong></div>
                         <small id="navbar-nombre-tenant">—</small>
                     </div>
-                    <button class="btn btn-outline-light btn-sm" id="btn-logout" type="button">
+                    <button class="btn btn-outline-light btn-sm" id="btn-logout" type="button" aria-label="Cerrar sesión de usuario">
                         <i class="bi bi-box-arrow-right me-1"></i> Cerrar sesión
                     </button>
                 </div>
