@@ -526,9 +526,11 @@ function actualizarIconosOrdenamiento() {
 
         if (columna === productosState.ordenarPor) {
             th.classList.add('table-active');
+            th.setAttribute('aria-sort', productosState.direccion === 'asc' ? 'ascending' : 'descending');
             icono.className = `bi ps-sort-icon ms-1 ${productosState.direccion === 'asc' ? 'bi-arrow-up' : 'bi-arrow-down'}`;
         } else {
             th.classList.remove('table-active');
+            th.removeAttribute('aria-sort');
             icono.className = 'bi bi-arrow-down-up ps-sort-icon ms-1 text-muted opacity-50';
         }
     });
