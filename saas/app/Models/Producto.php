@@ -33,4 +33,9 @@ class Producto extends Model
             'deleted_at' => 'datetime',
         ];
     }
+
+    public function detalles()
+    {
+        return $this->hasMany(DetalleVenta::class, 'producto_id');
+    }
 }

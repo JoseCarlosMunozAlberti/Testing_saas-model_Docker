@@ -15,12 +15,22 @@ use App\Traits\Multitenant;
 
 use Laravel\Sanctum\HasApiTokens;
 
-#[Fillable(['tenant_id', 'name', 'email', 'password'])]
+#[Fillable(['tenant_id', 'name', 'email', 'password', 'rol'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
     use HasApiTokens, HasFactory, Notifiable, Multitenant;
+
+    public function esAdmin(): bool
+    {
+        return in_array($this->rol, ['admin', 'superuser']);
+    }
+
+    public function tieneRol(string $rol): bool
+    {
+        return $this->rol === $rol || $this->rol === 'superuser';
+    }
 
     /**
      * Get the attributes that should be cast.

@@ -25,20 +25,22 @@ class DatabaseSeeder extends Seeder
         );
 
         User::updateOrCreate(
-            ['email' => 'admin@salqui.test'],
+            ['email' => 'admin@salqui.com'],
             [
                 'tenant_id' => $tenantSalqui->id,
                 'name' => 'Administrador SALQUI',
-                'password' => Hash::make('ClaveSegura123!'),
+                'password' => Hash::make('Clave12345'),
+                'rol' => 'admin',
             ]
         );
 
         User::updateOrCreate(
-            ['email' => 'admin@granpalacio.test'],
+            ['email' => 'admin@granpalacio.com'],
             [
                 'tenant_id' => $tenantGranPalacio->id,
                 'name' => 'Administrador Gran Palacio',
-                'password' => Hash::make('ClaveSegura123!'),
+                'password' => Hash::make('Clave12345'),
+                'rol' => 'admin',
             ]
         );
 

@@ -53,6 +53,13 @@
                             <i class="bi bi-box-seam me-1"></i> Productos
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->is('ventas') ? 'active' : '' }}"
+                           href="/ventas" id="nav-ventas"
+                           {!! request()->is('ventas') ? 'aria-current="page"' : '' !!}>
+                            <i class="bi bi-cart-check me-1"></i> Ventas
+                        </a>
+                    </li>
                 </ul>
 
                 <div class="d-flex align-items-center gap-3">

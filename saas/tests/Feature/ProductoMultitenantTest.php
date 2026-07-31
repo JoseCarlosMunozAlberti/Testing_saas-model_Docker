@@ -40,6 +40,7 @@ class ProductoMultitenantTest extends TestCase
             'name' => 'User Salqui',
             'email' => 'salqui@example.com',
             'password' => Hash::make('password'),
+            'rol' => 'admin',
         ]);
 
         $this->userGranPalacio = User::create([
@@ -47,6 +48,7 @@ class ProductoMultitenantTest extends TestCase
             'name' => 'User Gran Palacio',
             'email' => 'granpalacio@example.com',
             'password' => Hash::make('password'),
+            'rol' => 'admin',
         ]);
 
         $this->productoSalqui = new Producto();

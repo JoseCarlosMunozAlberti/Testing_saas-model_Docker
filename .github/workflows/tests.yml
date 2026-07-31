@@ -1,0 +1,77 @@
+name: Executar Pruebas Automatizadas (CI/CD)
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master, develop ]
+
+jobs:
+  laravel-tests:
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_DATABASE: saas_test
+          MYSQL_ROOT_PASSWORD: secret_root_pass
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: --health-cmd="redis-cli ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
+    steps:
+      - name: Checkout del código
+        uses: actions/checkout@v4
+
+      - name: Configurar entorno PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, pdo, pdo_mysql, bcmath, redis
+          coverage: none
+
+      - name: Instalar dependencias de Composer
+        run: |
+          cd saas
+          composer install --prefer-dist --no-progress --no-interaction
+
+      - name: Preparar .env de pruebas
+        run: |
+          cd saas
+          cp .env.example .env.testing
+          php artisan key:generate --env=testing
+
+      - name: Ejecutar migraciones en saas_test
+        env:
+          APP_ENV: testing
+          DB_CONNECTION: mysql
+          DB_HOST: 127.0.0.1
+          DB_PORT: 3306
+          DB_DATABASE: saas_test
+          DB_USERNAME: root
+          DB_PASSWORD: secret_root_pass
+          SF_ENABLED: false
+        run: |
+          cd saas
+          php artisan migrate --force
+
+      - name: Ejecutar pruebas PHPUnit
+        env:
+          APP_ENV: testing
+          DB_CONNECTION: mysql
+          DB_HOST: 127.0.0.1
+          DB_PORT: 3306
+          DB_DATABASE: saas_test
+          DB_USERNAME: root
+          DB_PASSWORD: secret_root_pass
+          SF_ENABLED: false
+        run: |
+          cd saas
+          php artisan test

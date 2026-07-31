@@ -37,7 +37,8 @@ class DatosDemostracionSeeder extends Seeder
             [
                 'tenant_id' => $tenantSalqui->id,
                 'name' => 'Admin Salqui',
-                'password' => Hash::make('Secret123!'),
+                'password' => Hash::make('Clave12345'),
+                'rol' => 'admin',
             ]
         );
 
@@ -46,7 +47,8 @@ class DatosDemostracionSeeder extends Seeder
             [
                 'tenant_id' => $tenantPalacio->id,
                 'name' => 'Admin Palacio',
-                'password' => Hash::make('Secret123!'),
+                'password' => Hash::make('Clave12345'),
+                'rol' => 'admin',
             ]
         );
 

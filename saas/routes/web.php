@@ -17,3 +17,7 @@ Route::get('/dashboard', function () {
 Route::get('/productos', function () {
     return view('productos.index', ['mostrarNavegacion' => true]);
 })->name('productos.index');
+
+Route::get('/ventas', function () {
+    return view('ventas.index', ['mostrarNavegacion' => true]);
+})->name('ventas.index');
