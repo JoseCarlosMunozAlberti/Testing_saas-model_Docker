@@ -2,9 +2,19 @@ name: Executar Pruebas Automatizadas (CI/CD)
 
 on:
   push:
-    branches: [ main, master, develop ]
+    branches:
+      - main
+      - master
+      - develop
+      - proyecto-final-capstone
+
   pull_request:
-    branches: [ main, master, develop ]
+    branches:
+      - main
+      - master
+      - develop
+
+  workflow_dispatch:
 
 jobs:
   laravel-tests:
