@@ -35,4 +35,12 @@ return [
         ],
     ],
 
+    'salesforce' => [
+        'enabled' => env('SF_ENABLED', false),
+        'login_url' => env('SF_LOGIN_URL'),
+        'client_id' => env('SF_CLIENT_ID'),
+        'client_secret' => env('SF_CLIENT_SECRET'),
+        'api_version' => env('SF_API_VERSION', 'v67.0'),
+    ],
+
 ];

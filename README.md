@@ -113,20 +113,18 @@ graph TD
 
 ## 8. Sincronización con Salesforce CRM
 
-La plataforma incluye el servicio `SalesforceService` para registrar ventas pagadas como `Opportunity` en Salesforce.
+La plataforma incluye el servicio `SalesforceService` para registrar ventas pagadas como `Opportunity` en Salesforce mediante la **External Client App** autorizada con **OAuth 2.0 Client Credentials Grant** y API `v67.0`.
 
 ### Configuración en `.env` (Deshabilitado por defecto):
 ```env
 SF_ENABLED=false
-SF_LOGIN_URL=https://login.salesforce.com
-SF_CLIENT_ID=tu_client_id
-SF_CLIENT_SECRET=tu_client_secret
-SF_USERNAME=tu_usuario
-SF_PASSWORD=tu_password
-SF_API_VERSION=v58.0
+SF_LOGIN_URL=https://tu-dominio.develop.my.salesforce.com
+SF_CLIENT_ID=tu_consumer_key
+SF_CLIENT_SECRET=tu_consumer_secret
+SF_API_VERSION=v67.0
 ```
 
-> **Nota:** Si `SF_ENABLED=false`, las ventas se confirman localmente sin intentar la conexión externa. Si la llamada a Salesforce falla, el pago local permanece guardado y el stock descontado.
+> **Nota de Seguridad:** NUNCA escriba credenciales reales en el repositorio ni en archivos versionados. Si `SF_ENABLED=false`, las ventas se confirman localmente sin intentar la conexión externa. Si la llamada a Salesforce falla, el pago local permanece guardado y el stock descontado.
 
 ---
 

@@ -178,13 +178,14 @@ class VentaMultitenantTest extends TestCase
         config(['services.salesforce.login_url' => 'https://login.salesforce.com']);
         config(['services.salesforce.client_id' => 'mock_client_id']);
         config(['services.salesforce.client_secret' => 'mock_client_secret']);
+        config(['services.salesforce.api_version' => 'v67.0']);
 
         Http::fake([
             'https://login.salesforce.com/services/oauth2/token' => Http::response([
                 'access_token' => 'mock_access_token',
                 'instance_url' => 'https://mock.salesforce.com',
             ], 200),
-            'https://mock.salesforce.com/services/data/v58.0/sobjects/Opportunity/' => Http::response([
+            'https://mock.salesforce.com/services/data/v67.0/sobjects/Opportunity' => Http::response([
                 'id' => '006000000000001AAA',
                 'success' => true,
             ], 201),
@@ -209,7 +210,31 @@ class VentaMultitenantTest extends TestCase
         $this->assertDatabaseHas('ventas', [
             'id' => $ventaId,
             'salesforce_id' => '006000000000001AAA',
-            'salesforce_sync_status' => 'synced',
+            'salesforce_sync_status' => 'sincronizada',
         ]);
+
+        // Verificar que la petición de OAuth2 envió grant_type=client_credentials y no username/password
+        Http::assertSent(function ($request) {
+            if ($request->url() === 'https://login.salesforce.com/services/oauth2/token') {
+                return $request['grant_type'] === 'client_credentials'
+                    && $request['client_id'] === 'mock_client_id'
+                    && $request['client_secret'] === 'mock_client_secret'
+                    && !isset($request['username'])
+                    && !isset($request['password']);
+            }
+            return true;
+        });
+
+        // Verificar que la petición de Opportunity usó Bearer token y los campos requeridos
+        Http::assertSent(function ($request) {
+            if ($request->url() === 'https://mock.salesforce.com/services/data/v67.0/sobjects/Opportunity') {
+                return $request->hasHeader('Authorization', 'Bearer mock_access_token')
+                    && str_contains($request['Name'], 'Venta #')
+                    && $request['Amount'] == 100.00
+                    && $request['StageName'] === 'Closed Won'
+                    && !empty($request['CloseDate']);
+            }
+            return true;
+        });
     }
 }

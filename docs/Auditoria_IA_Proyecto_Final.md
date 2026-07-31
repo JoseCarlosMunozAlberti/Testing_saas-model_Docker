@@ -55,14 +55,14 @@ Este documento registra las decisiones arquitectónicas y técnicas adoptadas du
 
 ---
 
-### 4. Integración Asíncrona / No Bloqueante con Salesforce
-- **Problema/Requisito:** Enviar la venta pagada a Salesforce como `Opportunity` (`Closed Won`) sin que una caída de red o falta de credenciales externas bloquee el cobro local.
-- **Propuesta de la IA:** Invocar el servicio `SalesforceService` utilizando `Http::fake()` en pruebas y ejecutando la sincronización fuera o inmediatamente después de la transacción DB del pago.
+### 4. Integración Asíncrona / No Bloqueante con Salesforce (OAuth 2.0 Client Credentials)
+- **Problema/Requisito:** Enviar la venta pagada a Salesforce como `Opportunity` (`Closed Won`) mediante OAuth 2.0 Client Credentials Grant (versión API `v67.0`) sin requerir credenciales personales de usuario (`username`/`password`) ni bloquear la transacción de pago local.
+- **Propuesta de la IA:** Actualizar `SalesforceService` para usar exclusivamente `config('services.salesforce')`, realizar la autenticación con `grant_type=client_credentials` enviando `client_id` y `client_secret`, y crear la `Opportunity` usando el Bearer Token obtenido.
 - **Revisión del equipo:**
-  - **Revisado por:** Leonardo David Vargas Monasterio.
-  - **Lo aceptado:** El uso del cliente HTTP de Laravel y la bandera de entorno `SF_ENABLED=false` para ejecuciones locales y CI.
-  - **Lo modificado:** Se envolvió la llamada a Salesforce en un bloque `try/catch` aislado con log de errores. Si Salesforce falla o devuelve error de autenticación, la venta local permanece en estado `pagada` y el stock descontado.
-  - **Justificación técnica:** Desacoplamiento de la pasarela local de sistemas externos de terceros (tolerancia a fallos).
+  - **Revisado por:** Pendiente de revisión humana final por José Carlos Muñoz Alberti y Leonardo David Vargas Monasterio.
+  - **Lo aceptado:** La eliminación completa del flujo Password Grant y de las propiedades `$username`/`$password`, así como la asignación de estados `sincronizada`, `fallida` y `deshabilitada`.
+  - **Lo modificado:** Se incorporaron aserciones estrictas en `VentaMultitenantTest` mediante `Http::assertSent()` para verificar que la petición enviada contenga únicamente `grant_type=client_credentials` y no exponga contraseñas en logs ni payloads.
+  - **Justificación técnica:** Sigue los estándares modernos de integración M2M (Machine-to-Machine) recomendados por Salesforce para External Client Apps, eliminando la dependencia de usuarios individuales.
 
 ---
 
